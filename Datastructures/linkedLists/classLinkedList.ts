@@ -40,6 +40,7 @@ export class linkedList {
       node.next = this.head;
       this.head = node;
     }
+
     this.size++;
   }
 
@@ -52,6 +53,7 @@ export class linkedList {
       this.tail!.next = node;
       this.tail = node;
     }
+    this.size++;
   }
 
   removeFromFront() {
@@ -93,6 +95,31 @@ export class linkedList {
 
   peek() {
     return this.head?.value;
+  }
+
+  sortLinkedList() {
+    let curr = this.head;
+
+    while (curr != this.tail) {
+      if (curr!.value > curr!.next!.value) {
+        const temp = curr!.value;
+        curr!.value = curr!.next!.value;
+        curr!.next!.value = temp;
+      }
+      curr = curr!.next;
+    }
+  }
+
+  checkIfSorted() {
+    let curr = this.head;
+
+    while (curr != this.tail) {
+      if (curr!.value > curr!.next!.value) {
+        return false;
+      }
+      curr = curr!.next;
+    }
+    return true;
   }
 
   print() {
