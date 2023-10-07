@@ -1,21 +1,23 @@
-type TlinkedList = {
+type TDLinkedList = {
   value: number | string;
-  next: linkedListNode | null;
+  next: TDLinkedList | null;
+  prev: TDLinkedList | null;
 };
 
-class linkedListNode {
+class DLinkedListNode {
+  next: TDLinkedList | null;
+  prev: TDLinkedList | null;
   value: number | string;
-  //linkedListNode | null;
-  next: linkedListNode | null;
   constructor(value: number | string) {
     this.value = value;
     this.next = null;
+    this.prev = null;
   }
 }
 
-export class linkedList {
-  head: TlinkedList | null;
-  tail: TlinkedList | null;
+class DLinkedList {
+  head: TDLinkedList | null;
+  tail: TDLinkedList | null;
   size: number;
   constructor() {
     this.head = null;
@@ -23,44 +25,33 @@ export class linkedList {
     this.size = 0;
   }
 
-  isEmpty() {
-    return this.size === 0;
-  }
-
-  getSize() {
-    return this.size;
-  }
-
   prepend(value: number | string) {
-    const node = new linkedListNode(value);
+    const node = new DLinkedListNode(value);
     if (this.isEmpty()) {
       this.head = node;
       this.tail = node;
     } else {
-      node.next = this.head;
+      node!.next = this.head;
       this.head = node;
     }
-
     this.size++;
   }
 
   append(value: number | string) {
-    const node = new linkedListNode(value);
-
+    const node = new DLinkedListNode(value);
     if (this.isEmpty()) {
       this.head = node;
       this.tail = node;
     } else {
       this.tail!.next = node;
+      node.prev = this.tail;
       this.tail = node;
     }
     this.size++;
   }
 
   removeFromFront() {
-    if (this.isEmpty()) {
-      return null;
-    }
+    if (this.isEmpty()) return null;
 
     const value = this.head!.value;
     if (this.size === 1) {
@@ -68,6 +59,7 @@ export class linkedList {
       this.tail = null;
     } else {
       this.head = this.head!.next;
+      this.head!.prev = null;
     }
 
     this.size--;
@@ -75,51 +67,56 @@ export class linkedList {
   }
 
   removeFromEnd() {
-    if (this.isEmpty()) {
-      return null;
-    }
+    if (this.isEmpty()) return null;
+
     const value = this.tail!.value;
+
     if (this.size === 1) {
       this.head = null;
       this.tail = null;
     } else {
-      let prev: TlinkedList | null = this.head;
-      while (prev!.next !== this.tail) {
-        prev = prev!.next;
-      }
-      prev!.next = null;
-      this.tail = prev;
+      this.tail = this.tail!.prev;
+      this.tail!.next = null;
     }
+
     this.size--;
     return value;
   }
 
   peek() {
-    return this.head?.value;
+    return this.head!.value;
+  }
+
+  isEmpty() {
+    return this.size === 0;
   }
 
   sortLinkedList() {
-    let curr = this.head;
+    for (let i = 0; i < this.size; i++) {
+      let curr = this.head;
 
-    while (curr != this.tail) {
-      if (curr!.value > curr!.next!.value) {
-        const temp = curr!.value;
-        curr!.value = curr!.next!.value;
-        curr!.next!.value = temp;
+      while (curr) {
+        if (curr.next?.value === undefined) break;
+        if (curr!.value > curr!.next!.value) {
+          const temp = curr!.value;
+          curr!.value = curr!.next!.value;
+          curr!.next.value = temp;
+        }
+        curr = curr!.next;
       }
-      curr = curr!.next;
     }
   }
 
   checkIfSorted() {
     let curr = this.head;
-
-    while (curr != this.tail) {
-      if (curr!.value > curr!.next!.value) {
+    while (curr) {
+      if (curr.value > curr.next!.value) {
         return false;
       }
-      curr = curr!.next;
+
+      curr = curr.next;
     }
+
     return true;
   }
 
@@ -127,12 +124,13 @@ export class linkedList {
     if (this.isEmpty()) return null;
 
     let curr = this.head;
-    let listValues = "";
+    let listValues: string = "";
     while (curr) {
-      listValues += `${curr?.value}\n`;
+      listValues += curr.value;
       curr = curr!.next;
     }
     return listValues;
   }
 }
+
 
